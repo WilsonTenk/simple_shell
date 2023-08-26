@@ -6,10 +6,10 @@
 void process_variables(shell *sh, char **args);
 
 /**
- * read_line - reads a line from stdin
- * @fd: File descriptor to read from
+ * read_line - Here Read a line from stdin
+ * @fd: Here File descriptor to read from
  * @sh: Pointer to the shell structure
- * Return: pointer to the line read, or NULL if EOF is reached
+ * Return: Pointer to the line read, or NULL if EOF is reached
  */
 char *read_line(shell *sh, int fd)
 {
@@ -17,7 +17,7 @@ char *read_line(shell *sh, int fd)
 	size_t len = 0;
 	ssize_t nread;
 
-	nread = _getline(&line, &len, fd);
+	nread = my_getline(&line, &len, fd);
 
 	if (nread == -1)
 	{
@@ -33,7 +33,7 @@ char *read_line(shell *sh, int fd)
 }
 
 /**
- * read_input - Reads input from the user and stores it in a shell struct
+ * read_input - Read input from the user and store it in a shell struct
  * @sh: Pointer to the shell structure
  */
 void read_input(shell *sh)
@@ -44,10 +44,10 @@ void read_input(shell *sh)
 
 	if (sh->argc > 1)
 	{
-		fd = open(sh->argv[1], O_RDONLY);
+		fd = my_open(sh->argv[1], O_RDONLY);
 		if (fd == -1)
 		{
-			_fprintf(STDERR_FILENO, "%s: 0: Can't open %s\n",
+			my_dprintf(STDERR_FILENO, "%s: 0: Can't open %s\n",
 					 "./hsh", sh->argv[1]);
 			sh->status = 127;
 			sh->run = 0;
@@ -60,7 +60,7 @@ void read_input(shell *sh)
 		old_size = sizeof(char *) * (sh->cmd_count + 1);
 		new_size = sizeof(char *) * (sh->cmd_count + 2);
 
-		sh->input = _realloc(sh->input, old_size, new_size);
+		sh->input = my_realloc(sh->input, old_size, new_size);
 		sh->input[sh->cmd_count] = cmd;
 		sh->input[sh->cmd_count + 1] = NULL;
 		sh->cmd_count++;
@@ -70,24 +70,24 @@ void read_input(shell *sh)
 	}
 
 	if (fd != STDIN_FILENO)
-		close(fd);
+		my_close(fd);
 }
 
 /**
- * parse_command - Parses a command string into an array of arguments
+ * parse_command - Parse a command string into an array of arguments
  * @sh: Pointer to the shell structure
  * @cmd: The command string to be parsed
- * Return: Pointer to the array of arguments, or NULL if command is empty
+ * Return: Pointer to the array of arguments, or NULL if the command is empty
  */
 void parse_command(shell *sh, char *cmd)
 {
 	int i = 0;
-	char **args = malloc(MAX_ARGS * sizeof(char *));
+	char **args = my_malloc(MAX_ARGS * sizeof(char *));
 	char *arg, *start, *end;
 
 	if (!args)
 	{
-		_fprintf(STDERR_FILENO, "Error: memory allocation failed\n");
+		my_dprintf(STDERR_FILENO, "Error: memory allocation failed\n");
 		exit(EXIT_FAILURE);
 	}
 	if (!cmd || !*cmd)
@@ -95,7 +95,7 @@ void parse_command(shell *sh, char *cmd)
 		sh->args = args;
 		return;
 	}
-	arg = _strtok(cmd, " \t\n\r");
+	arg = my_strtok(cmd, " \t\n\r");
 	while (arg)
 	{
 		/* Check for comment */
@@ -103,17 +103,17 @@ void parse_command(shell *sh, char *cmd)
 			break;
 		/* Remove double quotes */
 		start = arg;
-		end = start + _strlen(start) - 1;
+		end = start + my_strlen(start) - 1;
 		if (start[0] == '"' && end[0] == '"')
 			(end[0] = '\0', start++);
 
 		args[i] = start;
 		if (++i >= MAX_ARGS)
 		{
-			_fprintf(STDERR_FILENO, "Error: too many arguments\n");
+			my_dprintf(STDERR_FILENO, "Error: too many arguments\n");
 			exit(EXIT_FAILURE);
 		}
-		arg = _strtok(NULL, " \t\n\r");
+		arg = my_strtok(NULL, " \t\n\r");
 	}
 	args[i] = NULL;
 	process_variables(sh, args);
@@ -121,7 +121,7 @@ void parse_command(shell *sh, char *cmd)
 }
 
 /**
- * process_variables - Processes variables in the shell
+ * process_variables - Process variables in the shell
  * @sh: Pointer to the shell structure
  * @args: Array of arguments
  */
@@ -136,14 +136,14 @@ void process_variables(shell *sh, char **args)
 		if (args[i][0] != '$')
 			continue;
 
-		if (_strcmp(args[i], "$?", -1) == 0)
+		if (my_strcmp(args[i], "$?", -1) == 0)
 		{
-			_sprintf(status_str, "%d", sh->status);
+			my_sprintf(status_str, "%d", sh->status);
 			args[i] = status_str;
 		}
-		else if (_strcmp(args[i], "$$", 2) == 0)
+		else if (my_strcmp(args[i], "$$", 2) == 0)
 		{
-			_sprintf(pid_str, "%d", getpid());
+			my_sprintf(pid_str, "%d", my_getpid());
 			args[i] = pid_str;
 		}
 		else if (args[i][1] == '\0' || args[i][1] == ' ')
@@ -152,7 +152,7 @@ void process_variables(shell *sh, char **args)
 		}
 		else
 		{
-			arg_value = _getenv(args[i] + 1);
+			arg_value = my_getenv(args[i] + 1);
 			if (arg_value)
 				args[i] = arg_value;
 			else

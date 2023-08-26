@@ -1,7 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-/* including the files for sShell project */
+/* ---------------------------- Includes ---------------------------- */
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -15,14 +15,17 @@
 #include <stdarg.h>
 #include <signal.h>
 
+/* ---------------------------- Definitions ---------------------------- */
+
 #define BUFFER_SIZE 2048
 #define ALIASES_SIZE 100
 
 typedef struct shell shell;
 
+/* -------------- Struct Definitions ------------------------ */
 
 /**
- * struct cmd - Struct to store a command name and function pointer
+ * struct cmd - Stores command name and associated function pointer
  * @name: Pointer to the command name string
  * @func: Pointer to the function associated with the command
  */
@@ -32,9 +35,8 @@ typedef struct cmd
 	void (*func)(shell *);
 } cmd;
 
-
 /**
- * struct alias - Struct for storing an alias name and value
+ * struct alias - Stores alias name and its value
  * @name: Pointer to the alias name
  * @value: Pointer to the alias value
  */
@@ -44,24 +46,21 @@ typedef struct alias
 	char *value;
 } alias;
 
-
 /**
- * struct shell - Struct contains information about the shell environment
- * @input: An array of strings containing commands from the user input
- * @args: An array of strings containing arguments from the user input
- * @environ_copy: An array of strings containing a copy of the environ
- * @builtins: A pointer to an array of containing about the builtin commands
- * @num_builtins: The count of builtin commands
- * @cmd_count: The count of commands in the user input
- * @status: The exit status of the last command executed
- * @interactive: A boolean whether the program is running interactively or not
- * @builtins: A pointer to an array of containing about the builtin commands
- * @run: A boolean whether or not the shell should continue running
- * @aliases: An array of alias structures containing user-defined aliases
- * @argc: args count
- * @argv: arguments
+ * struct shell - Contains information about the shell environment
+ * @input: Array of strings with commands from user input
+ * @args: Array of strings with arguments from user input
+ * @environ_copy: Array of strings with a copy of the environment
+ * @builtins: Pointer to array havin  inf about built-in commands
+ * @num_builtins: Count of built-in commands
+ * @cmd_count: Count of commands in user input
+ * @status: Exit status of the last command executed
+ * @interactive: Boolean indicating if the program is running interactively
+ * @run: Boolean indicating if the shell should continue running
+ * @aliases: Array of alias structures containing user-defined aliases
+ * @argc: Number of command-line arguments
+ * @argv: Array of command-line argument strings
  */
-
 struct shell
 {
 	char **input;
@@ -78,10 +77,12 @@ struct shell
 	alias aliases[ALIASES_SIZE];
 };
 
+/* -------------------- External Variables------------------------- */
 
 extern char **environ;
 
-/* string_tools */
+/* ---------------------------- String Tools ---------------------------- */
+
 int _strlen(char *s);
 void reverse_str(char s[]);
 int _stoa(char *s, char *buf);
@@ -92,36 +93,40 @@ char *_strtok(char *str, char *delim);
 char *_strtok_r(char *str, const char *delim, char **saveptr);
 char *_strchr(char *s, int c);
 
-/* main */
+/* ---------------------------- Main ---------------------------- */
+
 void init_shell(shell *sh, int argc, char **argv);
 void free_shell(shell *sh);
 
+/* ---------------------------- Sprintf ---------------------------- */
 
-/* Sprintf */
 void _printf(const char *fmt, ...);
 void _fprintf(int fd, const char *fmt, ...);
 void _sprintf(char *str, const char *fmt, ...);
 
-/* Execution */
+/* ---------------------------- Execution ---------------------------- */
+
 char *find_command(char *command);
 int builtin_command(shell *sh);
 void process_command(shell *sh);
 void execute_command(shell *sh, int *curr_line);
 void external_command(shell *sh, int *curr_line);
 
-/* num_tools */
+/* ---------------------------- Number Tools ---------------------------- */
+
 int _atoi(const char *str);
 int _itoa(long n, char s[], int base, int sign);
 void *_realloc(void *ptr, ssize_t old_size, ssize_t new_size);
 void free_double(char ***ptr);
 int is_num(char *str);
 
-/* input*/
+/* ---------------------------- Input ---------------------------- */
+
 void read_input(shell *sh);
 void parse_command(shell *sh, char *cmd);
 
+/* ------------ Builtins Functions ------------------------ */
 
-/* builtins functions*/
 cmd *get_built(void);
 int num_built(void);
 cmd *get_builtins(void);
@@ -129,13 +134,13 @@ char *get_alias_value(shell *sh, char *name);
 void cmd_alias(shell *sh);
 void update_environment(shell *sh, char *env_var);
 
+/* ---------------------------- System Tools ---------------------------- */
 
-/* system tools*/
 ssize_t _getline(char **lineptr, size_t *n, int fd);
 char *_getenv(const char *name);
 char **copy_environ(void);
 
-/* builtins */
+/* ---------------------------- Builtins ---------------------------- */
 
 void cmd_setenv(shell *sh);
 void cmd_unsetenv(shell *sh);

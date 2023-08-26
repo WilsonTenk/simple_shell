@@ -8,16 +8,16 @@
 void write_str(int fd, char *s)
 {
 	(!s) && (s = "(null)");
-	write(fd, s, _strlen(s));
+	write(fd, s, _willy_strlen(s));
 }
 
 /**
- * _strchr - searches for a character in a string
+ * _willy_strchr - searches for a character in a string
  * @s: pointer to the string to search
  * @c: character to search for
  * Return: Pointer to the first occurrence of c in s, or NULL if not found
  */
-char *_strchr(char *s, int c)
+char *_willy_strchr(char *s, int c)
 {
 	while (*s != (char)c)
 		if (!*s++)
@@ -27,16 +27,16 @@ char *_strchr(char *s, int c)
 }
 
 /**
- * _strdup - Duplicates a string
+ * _willy_strdup - Duplicates a string
  * @s: The string to duplicate
  * Return: Pointer to the duplicated string, or NULL if fails
  */
-char *_strdup(const char *s)
+char *_willy_strdup(const char *s)
 {
 	int i;
 	char *result;
 
-	result = malloc(sizeof(char) * (_strlen((char *)s) + 1));
+	result = willy_malloc(sizeof(char) * (_willy_strlen((char *)s) + 1));
 	if (result == NULL)
 		return (NULL);
 
@@ -49,12 +49,12 @@ char *_strdup(const char *s)
 }
 
 /**
- * _strtok - Tokenizes a string by a given delimiter
+ * _willy_strtok - Tokenizes a string by a given delimiter
  * @str: the string to split
  * @delim: The delimiter used for tokenization
  * Return: A pointer to the next token in the string
  */
-char *_strtok(char *str, char *delim)
+char *_willy_strtok(char *str, char *delim)
 {
 	static char *next;
 	char *curr = str ? str : next;
@@ -62,7 +62,7 @@ char *_strtok(char *str, char *delim)
 	if (!curr)
 		return (NULL);
 
-	while (*curr && _strchr(delim, *curr))
+	while (*curr && _willy_strchr(delim, *curr))
 		curr++;
 	if (!*curr)
 		return (NULL);
@@ -78,7 +78,7 @@ char *_strtok(char *str, char *delim)
 			if (*next == '"')
 				next++;
 		}
-		else if (_strchr(delim, *next))
+		else if (_willy_strchr(delim, *next))
 		{
 			break;
 		}
@@ -91,19 +91,19 @@ char *_strtok(char *str, char *delim)
 }
 
 /**
- * _strtok_r - tokenizes a string using a delimiter (safe)
+ * _willy_strtok_r - tokenizes a string using a delimiter (safe)
  * @str: The string to split
  * @delim: The delimiter character used to split the string
  * @saveptr: pointer to save the position of the next token
  *
- * used instead of _strtok because it is reentrant and can be safely used in
- * multi-process. The _strtok function uses a static variable to keep track of
+ * used instead of _willy_strtok cos is reentrant n can be safely used in
+ * multi-process. The _willy_strtok function uses a static variable
  * the position in the string between calls, which can cause issues if the
  * function is called from multiple threads or if it is called recursively.
  *
  * Return: pointer to the start of the token, or NULL if no more tokens
  */
-char *_strtok_r(char *str, const char *delim, char **saveptr)
+char *_willy_strtok_r(char *str, const char *delim, char **saveptr)
 {
 	char *token_start, *token_end;
 	const char *d;

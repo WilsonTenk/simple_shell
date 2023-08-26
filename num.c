@@ -1,12 +1,12 @@
 #include "main.h"
 
 /**
- * is_num - Checks if a string represents a numeric value.
+ * willy_is_num - Checks if a string represents a numeric value.
  * @str: The input string to be checked.
  *
  * Return: 1 if the string represents a numeric value, 0 otherwise.
  */
-int is_num(char *str)
+int willy_is_num(char *str)
 {
 	int i = 0;
 
@@ -21,11 +21,11 @@ int is_num(char *str)
 }
 
 /**
- * _atoi - convert a string of digits into an integer
+ * willy_atoi - convert a string of digits into an integer
  * @str: the string to be converted
  * Return: the converted integer
  */
-int _atoi(const char *str)
+int willy_atoi(const char *str)
 {
 	unsigned int i = 0, result = 0, sign = 1;
 
@@ -46,14 +46,14 @@ int _atoi(const char *str)
 }
 
 /**
- * _itoa - convert a integer to a string in the given base (n)
+ * willy_itoa - convert a integer to a string in the given base (n)
  * @x: the integer to convert
  * @s: the output string
  * @base: the base of the number
  * @sign: whether or not to include a sign character
  * Return: the length of the string.
  */
-int _itoa(long x, char s[], int base, int sign)
+int willy_itoa(long x, char s[], int base, int sign)
 {
 	unsigned int n, i = 0, neg = 0;
 
@@ -73,50 +73,50 @@ int _itoa(long x, char s[], int base, int sign)
 		s[i++] = '-';
 
 	s[i] = '\0';
-	reverse_str(s);
+	willy_reverse_str(s);
 	return (i);
 }
 
 /**
- * _realloc - reallocate a block of memory
+ * willy_realloc - reallocate a block of memory
  * @ptr: pointer to the memory previously allocated
  * @old_size: size of the memory block pointed by ptr
  * @new_size: new size of the memory block to be allocated
  * Return: pointer to the newly allocated memory, or NULL if it fails
  */
-void *_realloc(void *ptr, ssize_t old_size, ssize_t new_size)
+void *willy_realloc(void *ptr, ssize_t old_size, ssize_t new_size)
 {
 	void *new_ptr;
 
 	if (!ptr)
-		return (malloc(new_size));
+		return (willy_malloc(new_size));
 
 	if (new_size == 0)
 	{
-		free(ptr);
+		willy_free(ptr);
 		return (NULL);
 	}
 
-	new_ptr = malloc(new_size);
+	new_ptr = willy_malloc(new_size);
 	if (!new_ptr)
 		return (NULL);
 
-	_memcpy(new_ptr, ptr, old_size < new_size ? old_size : new_size);
-	free(ptr);
+	willy_memcpy(new_ptr, ptr, old_size < new_size ? old_size : new_size);
+	willy_free(ptr);
 
 	return (new_ptr);
 }
 
 /**
- * free_double - Frees a double pointer
+ * willy_free_double - Frees a double pointer
  * @ptr: The double pointer to be freed
  */
-void free_double(char ***ptr)
+void willy_free_double(char ***ptr)
 {
 	int i;
 
 	for (i = 0; (*ptr)[i]; i++)
-		free((*ptr)[i]);
-	free(*ptr);
+		willy_free((*ptr)[i]);
+	willy_free(*ptr);
 	*ptr = NULL;
 }
