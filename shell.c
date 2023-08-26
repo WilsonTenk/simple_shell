@@ -11,9 +11,9 @@ void _vsprintf(char *str, const char *fmt, va_list ap)
 	char u;
 	int t, state = 0;
 
-	for (t = 0; fmt[t]; i++)
+	for (t = 0; fmt[t]; t++)
 	{
-		c = fmt[t];
+		u = fmt[t];
 		if (state == 0)
 			(u == '%') ? (state = '%') : (*str++ = u);
 		else if (state == '%')

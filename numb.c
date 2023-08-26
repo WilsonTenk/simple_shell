@@ -66,7 +66,7 @@ int _itoa(long x, char s[], int base, int sign)
 		u = x;
 
 	do
-		s[t++] = n % base + '0';
+		s[t++] = u % base + '0';
 	while ((u /= base) > 0);
 
 	if (neg)

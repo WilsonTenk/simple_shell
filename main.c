@@ -65,8 +65,8 @@ void free_shell(shell *wt)
 	for (t = 0; wt->aliases[t].name; t++)
 	{
 		if (wt->aliases[t].name)
-			free(sh->aliases[t].name);
+			free(wt->aliases[t].name);
 		if (wt->aliases[t].value)
-			free(sh->aliases[t].value);
+			free(wt->aliases[t].value);
 	}
 }
