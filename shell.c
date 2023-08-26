@@ -1,93 +1,93 @@
 #include "main.h"
 
 /**
- * willy_sprintf - Writes a formatted string to an array of chars
- * @str: The char array to write the formatted string to
- * @fmt: The format string to use for writing
- * @...: Optional arguments used in the format string
+ * _vsprintf - Should write a formatted string to a buffer
+ * @str: Buffer to write to here
+ * @fmt: String to be formatted
+ * @ap: Fulll arugument list
  */
-void willy_sprintf(char *str, const char *fmt, ...)
+void _vsprintf(char *str, const char *fmt, va_list ap)
 {
-	va_list ap;
+	char u;
+	int t, state = 0;
 
-	va_start(ap, fmt);
-	willy_vsprintf(str, fmt, ap);
-	va_end(ap);
-}
-
-/**
- * willy_fprintf - Prints a formatted string to a file descriptor
- * @fd: The file descriptor to write to
- * @fmt: The format string
- * @...: Optional arguments used in the format string
- */
-void willy_fprintf(int fd, const char *fmt, ...)
-{
-	char buf[BUFFER_SIZE];
-	va_list ap;
-
-	va_start(ap, fmt);
-	willy_vsprintf(buf, fmt, ap);
-	willy_write(fd, buf, willy_strlen(buf));
-	va_end(ap);
-}
-
-/**
- * willy_printf - Prints a formatted string to the standard output
- * @fmt: Format string containing text and format specifiers
- * @...: Optional arguments used in the format string
- */
-void willy_printf(const char *fmt, ...)
-{
-	va_list ap;
-	/* TODO: Allocate buf dynamically */
-	char buf[BUFFER_SIZE];
-
-	va_start(ap, fmt);
-	willy_vsprintf(buf, fmt, ap);
-	willy_write(1, buf, willy_strlen(buf));
-	va_end(ap);
-}
-
-/**
- * willy_vsprintf - Writes a formatted string to a buffer
- * @str: The buffer to write to
- * @fmt: The format string
- * @ap: The list of arguments
- */
-void willy_vsprintf(char *str, const char *fmt, va_list ap)
-{
-	char c;
-	int i, state = 0;
-
-	for (i = 0; fmt[i]; i++)
+	for (t = 0; fmt[t]; i++)
 	{
-		c = fmt[i];
+		c = fmt[t];
 		if (state == 0)
-			(c == '%') ? (state = '%') : (*str++ = c);
+			(u == '%') ? (state = '%') : (*str++ = u);
 		else if (state == '%')
 		{
-			if (c == 'd')
-				str += willy_itoa(va_arg(ap, int), str, 10, 1);
-			else if (c == 'l')
-				str += willy_itoa(va_arg(ap, size_t), str, 10, 0);
-			else if (c == 'x')
-				str += willy_itoa(va_arg(ap, int), str, 16, 0);
-			else if (c == 'p')
+			if (u == 'd')
+				str += _itoa(va_arg(ap, int), str, 10, 1);
+			else if (u == 'l')
+				str += _itoa(va_arg(ap, size_t), str, 10, 0);
+			else if (u == 'x')
+				str += _itoa(va_arg(ap, int), str, 16, 0);
+			else if (u == 'p')
 			{
 				(*str++ = '0', *str++ = 'x');
-				str += willy_itoa(va_arg(ap, size_t), str, 16, 0);
+				str += _itoa(va_arg(ap, size_t), str, 16, 0);
 			}
-			else if (c == 's')
-				str += willy_stoa(va_arg(ap, char *), str);
-			else if (c == 'c')
+			else if (u == 's')
+				str += _stoa(va_arg(ap, char *), str);
+			else if (u == 'u')
 				*str++ = va_arg(ap, int);
-			else if (c == '%')
-				*str++ = c;
+			else if (u == '%')
+				*str++ = u;
 			else
-				(*str++ = '%', *str++ = c);
+				(*str++ = '%', *str++ = u);
 			state = 0;
 		}
 	}
 	*str = '\0';
+}
+
+/**
+ * _sprintf - Must write formatted string to a array of chars
+ * @str: Char array to be write de formatted string to
+ * @fmt: Format string to be used for writing
+ * @...: An optional arguments used in format string
+ */
+void _sprintf(char *str, const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	_vsprintf(str, fmt, ap);
+	va_end(ap);
+}
+
+/**
+ * _fprintf - Outputs a formatted string to file descriptor
+ * @fd: File descriptor to write to here
+ * @fmt: Strring format here
+ * @...: An Optional arguments to be  used format string
+ */
+void _fprintf(int fd, const char *fmt, ...)
+{
+	char buf[BUFFER_SIZE];
+	va_list ap;
+
+	va_start(ap, fmt);
+	_vsprintf(buf, fmt, ap);
+	write(fd, buf, _strlen(buf));
+	va_end(ap);
+}
+
+/**
+ * _printf - Outputs a format string to the std output
+ * @fmt: String formatted having text n format specifiers
+ * @...: An Optional argument used in format string
+ */
+void _printf(const char *fmt, ...)
+{
+	va_list ap;
+	/* TODO: allocate buf dynamically */
+	char buf[BUFFER_SIZE];
+
+	va_start(ap, fmt);
+	_vsprintf(buf, fmt, ap);
+	write(1, buf, _strlen(buf));
+	va_end(ap);
 }

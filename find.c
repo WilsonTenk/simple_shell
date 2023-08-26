@@ -4,35 +4,35 @@
 #include "main.h"
 
 /**
- * willy_find_command - Finds the full path of a command in the PATH environment
- * @command: The command to search for
- * Return: A pointer to the full path of the command, or NULL if not found
+ * find_command - Lookup full path of a cmd in the PATH environ
+ * @command: Cmd to lookup
+ * Return: Pointer to full path of cmd, or NULL not found
  */
-char *willy_find_command(char *command)
+char *find_command(char *command)
 {
 	char *path = NULL, *path_copy = NULL;
 	char *dir = NULL, *full_path = NULL;
 
-	path = willy_getenv("PATH");
+	path = _getenv("PATH");
 	if (!path)
 		return (NULL);
 
-	path_copy = willy_strdup(path);
-	dir = willy_strtok(path_copy, ":");
-	full_path = willy_malloc(willy_strlen(command) + willy_strlen(path) + 2);
+	path_copy = _strdup(path);
+	dir = _strtok(path_copy, ":");
+	full_path = malloc(_strlen(command) + _strlen(path) + 2);
 
 	while (dir != NULL)
 	{
-		willy_sprintf(full_path, "%s/%s", dir, command);
-		if (willy_access(full_path, X_OK) == 0)
+		_sprintf(full_path, "%s/%s", dir, command);
+		if (access(full_path, X_OK) == 0)
 		{
-			willy_free(path_copy);
+			free(path_copy);
 			return (full_path);
 		}
-		dir = willy_strtok(NULL, ":");
+		dir = _strtok(NULL, ":");
 	}
 
-	willy_free(path_copy);
-	willy_free(full_path);
+	free(path_copy);
+	free(full_path);
 	return (NULL);
 }

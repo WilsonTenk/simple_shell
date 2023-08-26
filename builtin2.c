@@ -1,50 +1,50 @@
 #include "main.h"
 
 /**
- * willy_find_environment - Finds the index of an env variable in the environ
- * @name: The name of the environment variable to search for
- * Return: The index of the environment variable, or -1 if not found.
+ * find_environment - This find index of an environ var in the env
+ * @name: Environ name variable to look for
+ * Return: Environment variable index, or -1 not found.
  */
-int willy_find_environment(char *name)
+int find_environment(char *name)
 {
 	char **env;
 	int index = 0;
-	size_t name_len = willy_strlen(name);
+	size_t name_len = _strlen(name);
 
 	for (env = environ; *env != NULL; env++, index++)
-		/* Compare the environment variable name with the given name */
-		if (willy_strcmp(*env, name, name_len) == 0 && (*env)[name_len] == '=')
+		/* Compare environ variable name with given name */
+		if (_strcmp(*env, name, name_len) == 0 && (*env)[name_len] == '=')
 			return (index);
 
 	return (-1);
 }
 
 /**
- * willy_update_environment - Updates the environment variables
- * @sh: Pointer to the shell structure
- * @env_var: The new environment variable to add
+ * update_environment - updates the env variables
+ * @sh: Shell structure's pointer
+ * @env_var: The latest new environment var to add
  */
-void willy_update_environment(shell *sh, char *env_var)
+void update_environment(shell *sh, char *env_var)
 {
 	size_t env_count = 0, name_len;
 	size_t old_size, new_size;
 	char **new_environ, **env_ptr;
 	int index;
-	char *name_end = willy_strchr(env_var, '=');
+	char *name_end = _strchr(env_var, '=');
 	char name[BUFFER_SIZE];
 
 	if (!name_end)
 		return;
 	if (!sh->environ_copy)
-		sh->environ_copy = willy_copy_environ();
+		sh->environ_copy = copy_environ();
 
 	name_len = name_end - env_var;
-	willy_memcpy(name, env_var, name_len);
+	_memcpy(name, env_var, name_len);
 	name[name_len] = '\0';
-	index = willy_find_environment(name);
+	index = find_environment(name);
 	if (index >= 0)
 	{
-		willy_free(sh->environ_copy[index]);
+		free(sh->environ_copy[index]);
 		sh->environ_copy[index] = env_var;
 	}
 	else
@@ -53,11 +53,11 @@ void willy_update_environment(shell *sh, char *env_var)
 			env_count++;
 		old_size = env_count * sizeof(char *);
 		new_size = (env_count + 2) * sizeof(char *);
-		new_environ = willy_realloc(sh->environ_copy, old_size, new_size);
+		new_environ = _realloc(sh->environ_copy, old_size, new_size);
 		if (!new_environ)
 		{
-			willy_fprintf(STDERR_FILENO, "Failed to allocate memory\n");
-			willy_free(env_var);
+			_fprintf(STDERR_FILENO, "Failed to allocate memory\n");
+			free(env_var);
 			return;
 		}
 		sh->environ_copy = new_environ;
@@ -69,77 +69,77 @@ void willy_update_environment(shell *sh, char *env_var)
 }
 
 /**
- * willy_remove_environment - Removes an environment variable from the system
- * @sh: Pointer to the shell structure
+ * remove_environment - clears an environ var from the system
+ * @sh: Shell structure's pointer
  */
-void willy_remove_environment(shell *sh)
+void remove_environment(shell *sh)
 {
-	int index = willy_find_environment(sh->args[1]);
+	int index = find_environment(sh->args[1]);
 
-	/* If the environment variable is not found, return */
+	/* In case the environ var is not found, return */
 	if (index == -1)
 		return;
 
 	if (!sh->environ_copy)
-		sh->environ_copy = willy_copy_environ();
+		sh->environ_copy = copy_environ();
 
-	willy_free(sh->environ_copy[index]);
+	free(sh->environ_copy[index]);
 
-	/* Shift the remaining environment variables up by one */
+	/* Remaining environ variables up by one */
 	for (; sh->environ_copy[index] != NULL; index++)
 		sh->environ_copy[index] = sh->environ_copy[index + 1];
 
-	/* Update the global environ variable */
+	/* Update the global environment vari */
 	environ = sh->environ_copy;
 	sh->status = 0;
 }
 
 /**
- * willy_cmd_unsetenv - Unsets an environment variable
- * @sh: Pointer to the shell structure
+ * cmd_unsetenv - Unsets environ var
+ * @sh: Shell structure's pointer
  */
-void willy_cmd_unsetenv(shell *sh)
+void cmd_unsetenv(shell *sh)
 {
 	if (sh->args[1] == NULL)
 	{
-		willy_fprintf(STDERR_FILENO, "Usage: unsetenv VARIABLE\n");
+		_fprintf(STDERR_FILENO, "Usage: unsetenv VARIABLE\n");
 		sh->status = 2;
 		return;
 	}
 
-	willy_remove_environment(sh);
+	remove_environment(sh);
 }
 
 /**
- * willy_cmd_setenv - Sets an environment variable
- * @sh: Pointer to the shell structure
+ * cmd_setenv - Uses an environ variable
+ * @sh: Shell structure's pointer
  */
-void willy_cmd_setenv(shell *sh)
+void cmd_setenv(shell *sh)
 {
 	char *env_var;
 	size_t name_len, value_len, env_var_len;
 
 	if (!sh->args[1] || !sh->args[2])
 	{
-		willy_fprintf(STDERR_FILENO, "Usage: setenv VARIABLE VALUE\n");
+		_fprintf(STDERR_FILENO, "Usage: setenv VARIABLE VALUE\n");
 		sh->status = 2;
 		return;
 	}
 
-	name_len = willy_strlen(sh->args[1]);
-	value_len = willy_strlen(sh->args[2]);
+	name_len = _strlen(sh->args[1]);
+	value_len = _strlen(sh->args[2]);
 
-	/* +2 for '=' and '\0' */
+	/* here we have +2 for '=' and '\0' */
 	env_var_len = name_len + value_len + 2;
-	env_var = willy_malloc(env_var_len);
+	env_var = malloc(env_var_len);
 
 	if (!env_var)
 	{
-		willy_fprintf(STDERR_FILENO, "Failed to allocate memory\n");
+		_fprintf(STDERR_FILENO, "Failed to allocate memory\n");
 		sh->status = 1;
 		return;
 	}
-	willy_sprintf(env_var, "%s=%s", sh->args[1], sh->args[2]);
+	_sprintf(env_var, "%s=%s", sh->args[1], sh->args[2]);
 
-	willy_update_environment(sh, env_var);
+	update_environment(sh, env_var);
 }

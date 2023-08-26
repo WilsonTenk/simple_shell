@@ -1,111 +1,111 @@
 #include "main.h"
 
 /**
- * willy_print_aliases - Prints all aliases in a shell struct
- * @sh: Pointer to the shell structure
+ * print_aliases - Output aliases in a shell struct
+ * @sh: Shell structure will be pointed to
  */
-void willy_print_aliases(shell *sh)
+void print_aliases(shell *sh)
 {
-	int j;
+	int t;
 
-	for (j = 0; j < ALIASES_SIZE; j++)
+	for (t = 0; t < ALIASES_SIZE; t++)
 	{
-		if (sh->aliases[j].name != NULL)
+		if (sh->aliases[t].name != NULL)
 		{
-			willy_printf("%s='%s'\n", sh->aliases[j].name, sh->aliases[j].value);
+			_printf("%s='%s'\n", sh->aliases[t].name, sh->aliases[t].value);
 		}
 	}
 }
 
 /**
- * willy_print_alias - Prints the alias of a given name
- * @sh: Pointer to shell struct
- * @name: Name of the alias to be printed with value
+ * print_alias - A given name of an alias is printed
+ * @sh: Struct will be pointed to
+ * @name: Alias name to be printed with value
  */
-void willy_print_alias(shell *sh, char *name)
+void print_alias(shell *sh, char *name)
 {
-	int j;
+	int t;
 
-	for (j = 0; j < ALIASES_SIZE; j++)
+	for (t = 0; t < ALIASES_SIZE; t++)
 	{
-		if (sh->aliases[j].name && willy_strcmp(sh->aliases[j].name, name, -1) == 0)
+		if (sh->aliases[t].name && _strcmp(sh->aliases[t].name, name, -1) == 0)
 		{
-			willy_printf("%s='%s'\n", sh->aliases[j].name, sh->aliases[j].value);
+			_printf("%s='%s'\n", sh->aliases[t].name, sh->aliases[t].value);
 		}
 	}
 }
 
 /**
- * willy_set_alias - Set an alias in the shell
- * @sh: Pointer to the shell struct
- * @name: Name of the alias
- * @value: Value of the alias
+ * set_alias - Alias set here
+ * @sh: Shell struct will be pointed at
+ * @name: Is the alias name
+ * @value: The value of the  alias
  */
-void willy_set_alias(shell *sh, char *name, char *value)
+void set_alias(shell *sh, char *name, char *value)
 {
 	char *new_value;
-	int i, j = 0, found = 0;
-	int len = willy_strlen(value);
+	int u, t = 0, found = 0;
+	int len = _strlen(value);
 
-	/* Create a new string without quotes */
-	new_value = willy_malloc(len + 1);
+	/* ----New string created without quotes---- */
+	new_value = malloc(len + 1);
 
-	for (i = 0; i < len; i++)
+	for (u = 0; u < len; u++)
 	{
-		if (value[i] != '"' && value[i] != '\'')
-			new_value[j++] = value[i];
+		if (value[u] != '"' && value[u] != '\'')
+			new_value[t++] = value[u];
 	}
-	new_value[j] = '\0';
-	/* Check if the alias already exists */
-	for (j = 0; j < ALIASES_SIZE; j++)
+	new_value[t] = '\0';
+	/* Does alias already exists */
+	for (t = 0; t < ALIASES_SIZE; t++)
 	{
-		if (sh->aliases[j].name && willy_strcmp(sh->aliases[j].name, name, -1) == 0)
+		if (sh->aliases[t].name && _strcmp(sh->aliases[t].name, name, -1) == 0)
 		{
-			willy_free(sh->aliases[j].value);
-			sh->aliases[j].value = willy_strdup(new_value);
+			free(sh->aliases[t].value);
+			sh->aliases[t].value = _strdup(new_value);
 			found = 1;
 			break;
 		}
 	}
-	/* If the alias doesn't exist, add it */
+	/* In case alias doesn't exist, add it */
 	if (!found)
 	{
-		for (j = 0; j < ALIASES_SIZE; j++)
+		for (t = 0; t < ALIASES_SIZE; t++)
 		{
-			if (sh->aliases[j].name == NULL)
+			if (sh->aliases[t].name == NULL)
 			{
-				sh->aliases[j].name = willy_strdup(name);
-				sh->aliases[j].value = willy_strdup(new_value);
+				sh->aliases[t].name = _strdup(name);
+				sh->aliases[t].value = _strdup(new_value);
 				break;
 			}
 		}
 	}
 
-	willy_free(new_value);
+	free(new_value);
 }
 
 /**
- * willy_cmd_alias - Set or print aliases.
- * @sh: Pointer to the shell struct
+ * cmd_alias - To set aliases.
+ * @sh: Shell struct get pointed to
  */
-void willy_cmd_alias(shell *sh)
+void cmd_alias(shell *sh)
 {
-	int i = 1, index, j;
+	int u = 1, index, t;
 	char name[ALIASES_SIZE];
 	char *arg, *value, *equal_sign;
 
-	/* Use an early return if the first argument is NULL */
-	if (sh->args[i] == NULL)
+	/* Utilize the early return if the first argument is NULL */
+	if (sh->args[u] == NULL)
 	{
-		willy_print_aliases(sh);
+		print_aliases(sh);
 		return;
 	}
 
-	for (; sh->args[i] != NULL; i++)
+	for (; sh->args[u] != NULL; u++)
 	{
-		arg = sh->args[i];
+		arg = sh->args[u];
 		equal_sign = NULL;
-		/* Search for the '=' character in arg */
+		/* Lookup for the '=' char in arg */
 		for (index = 0; arg[index] != '\0'; index++)
 		{
 			if (arg[index] == '=')
@@ -118,47 +118,47 @@ void willy_cmd_alias(shell *sh)
 		if (equal_sign)
 		{
 			index = equal_sign - arg;
-			/* Copy characters from arg to name */
-			for (j = 0; j < index && j < ALIASES_SIZE - 1; j++)
-				name[j] = arg[j];
+			/* Copy chars from arg to name */
+			for (t = 0; t < index && t < ALIASES_SIZE - 1; t++)
+				name[t] = arg[t];
 
-			name[j] = '\0';
+			name[t] = '\0';
 			value = equal_sign + 1;
-			willy_set_alias(sh, name, value);
+			set_alias(sh, name, value);
 		}
 		else
-			willy_print_alias(sh, arg);
+			print_alias(sh, arg);
 	}
 }
 
 /**
- * willy_get_alias_value - Retrieve the value of an alias from a shell struct
- * @sh: Pointer to the shell structure
- * @name: Name of the alias to retrieve
- * Return: The value of the alias, or NULL if not found
- * NOTE: hash-tables to optimize
+ * get_alias_value - Get back value of alias from a shell struct
+ * @sh: Pointer going to  shell structure
+ * @name: Our alias name to retrieve
+ * Return: Value of alias, or NULL if not found
+ * NOTE: optimize the hash-table
  */
-char *willy_get_alias_value(shell *sh, char *name)
+char *get_alias_value(shell *sh, char *name)
 {
-	int i;
+	int u;
 	char *value = NULL;
 	alias *curr_alias;
 
-	for (i = 0; i < ALIASES_SIZE; i++)
+	for (u = 0; u < ALIASES_SIZE; u++)
 	{
-		curr_alias = &sh->aliases[i];
-		if (curr_alias->name && willy_strcmp(curr_alias->name, name, -1) == 0)
+		curr_alias = &sh->aliases[u];
+		if (curr_alias->name && _strcmp(curr_alias->name, name, -1) == 0)
 		{
 			value = curr_alias->value;
 			break;
 		}
 	}
 
-	/* Check if the value is already an alias */
-	for (i = 0; value && i < ALIASES_SIZE; i++)
+	/* Lookup value is already an alias */
+	for (u = 0; value && u < ALIASES_SIZE; u++)
 	{
-		curr_alias = &sh->aliases[i];
-		if (curr_alias->name && willy_strcmp(curr_alias->name, value, -1) == 0)
+		curr_alias = &sh->aliases[u];
+		if (curr_alias->name && _strcmp(curr_alias->name, value, -1) == 0)
 		{
 			value = curr_alias->value;
 			break;

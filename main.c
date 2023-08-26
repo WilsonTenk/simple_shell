@@ -1,72 +1,72 @@
 #include "main.h"
 
 /**
- * main - Entry point for the shell program
- * @argc: The number of arguments passed to the program
- * @argv: An array[string] of the arguments passed to the program
- * Return: The status code of the last command executed
+ * main - Our shell program entry point
+ * @argc: Numb of args passed to our program
+ * @argv: Array strings of the arguments passed to our program
+ * Return: Command executed's earlier status
  */
 int main(int argc, char **argv)
 {
-	shell sh = {0};
+	shell wt = {0};
 
-	willy_init_shell(&sh, argc, argv);
+	init_shell(&wt, argc, argv);
 
-	while (sh.run)
+	while (wt.run)
 	{
-		if (sh.interactive)
-			willy_printf("$ ");
+		if (wt.interactive)
+			_printf("$ ");
 
-		willy_process_command(&sh);
+		process_command(&wt);
 	}
 
-	willy_free_shell(&sh);
-	return (sh.status);
+	free_shell(&wt);
+	return (wt.status);
 }
 
 /**
- * willy_init_shell - Initialize the shell struct
- * @sh: Pointer to the shell structure
- * @argc: The number of arguments passed to the program
- * @argv: An array[string] of the arguments passed to the program
+ * init_shell - We are initializing our shell structure
+ * @argc: Numb arguments we passed to our program
+ * @argv: The array/string/ of the arguments we passed
+ * @wt: Shell structure's pointer
  */
-void willy_init_shell(shell *sh, int argc, char **argv)
+void init_shell(shell *wt, int argc, char **argv)
 {
-	cmd *builtins = willy_get_builtins();
+	cmd *builtins = get_builtins();
 
-	sh->builtins = builtins;
-	sh->run = 1;
-	sh->argc = argc;
-	sh->argv = argv;
+	wt->builtins = builtins;
+	wt->run = 1;
+	wt->argc = argc;
+	wt->argv = argv;
 
-	while (builtins[sh->num_builtins].name)
-		sh->num_builtins++;
+	while (builtins[wt->num_builtins].name)
+		wt->num_builtins++;
 
-	sh->interactive = willy_isatty(STDIN_FILENO) && argc == 1;
+	wt->interactive = isatty(STDIN_FILENO) && argc == 1;
 }
 
 /**
- * willy_free_shell - Frees the memory allocated for a shell structure
- * @sh: The shell structure to be freed
+ * free_shell - We then freed thw  memory allocated for the shell struct
+ * @wt: Shell structure we will free
  */
-void willy_free_shell(shell *sh)
+void free_shell(shell *wt)
 {
-	int i;
+	int t;
 
-	if (sh->input)
-		willy_free_double(&sh->input);
+	if (wt->input)
+		free_double(&wt->input);
 
-	if (sh->args)
-		willy_free(sh->args);
+	if (wt->args)
+		free(wt->args);
 
-	if (sh->environ_copy)
-		willy_free_double(&sh->environ_copy);
+	if (wt->environ_copy)
+		free_double(&wt->environ_copy);
 
-	for (i = 0; sh->aliases[i].name; i++)
+	for (t = 0; wt->aliases[t].name; t++)
 	{
-		if (sh->aliases[i].name)
-			willy_free(sh->aliases[i].name);
-		if (sh->aliases[i].value)
-			willy_free(sh->aliases[i].value);
+		if (wt->aliases[t].name)
+			free(sh->aliases[t].name);
+		if (wt->aliases[t].value)
+			free(sh->aliases[t].value);
 	}
 }
