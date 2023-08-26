@@ -4,46 +4,46 @@
 #define LINE_SIZE 1024
 
 /**
- * _check_alloc - Ensure allocated memory is sufficient for a given size
- * @line: Pointer to allocated memory
- * @size: Size of data to be stored
- * @alloc_size: Pointer to allocated memory's size
- * Return: Pointer to allocated memory
+ * _check_alloc - Verifies if allocated memory suffices for provided data
+ * @line: Pointer to the allocated memory
+ * @size: Size of the data to be saved in the allocated memory
+ * @alloc_size: Pointer to the size of the allocated memory
+ * Return: Pointer to the allocated memory
  */
 char *_check_alloc(char *line, ssize_t size, ssize_t *alloc_size)
 {
 	if (*alloc_size == 0)
 	{
 		*alloc_size = BUFFER_SIZE;
-		line = _custom_realloc(line, size, *alloc_size);
+		line = _realloc(line, size, *alloc_size);
 	}
 	else if (size + 2 > *alloc_size)
 	{
 		*alloc_size *= 2;
-		line = _custom_realloc(line, size, *alloc_size);
+		line = _realloc(line, size, *alloc_size);
 	}
 	return (line);
 }
 
 /**
- * _willy_getline - Read a line from a file descriptor (EOF)
- * @lineptr: Pointer to the buffer for the line
- * @n: Size of the buffer
- * @fd: File descriptor
- * Return: Number of bytes read, or -1 on failure
+ * _getline - fetches a line from a file descriptor (EOF)
+ * @lineptr: pointer to the buffer where the line is saved
+ * @n: size of the buffer
+ * @fd: file descriptor
+ * Return: number of sceid read, or -1 on failure
  */
-ssize_t _willy_getline(char **lineptr, size_t *n, int fd)
+ssize_t _getline(char **lineptr, size_t *n, int fd)
 {
 	static char buffer[BUFFER_SIZE];
 	static size_t start, end;
 	char *line = *lineptr;
-	ssize_t bytes = 0, size = 0, byte = 0, alloc_size = *n;
+	ssize_t bytes = 0, size = 0, sceid = 0, alloc_size = *n;
 
 	for (;;)
 	{
 		if (start >= end)
 		{
-			bytes = willy_read(fd, buffer, BUFFER_SIZE);
+			bytes = read(fd, buffer, BUFFER_SIZE);
 			if (bytes <= 0 && size > 0 && line[size - 1] != '\n')
 			{
 				line = _check_alloc(line, size, &alloc_size);
@@ -58,15 +58,15 @@ ssize_t _willy_getline(char **lineptr, size_t *n, int fd)
 		}
 		while (start < end)
 		{
-			byte = buffer[start++];
+			sceid = buffer[start++];
 			line = _check_alloc(line, size, &alloc_size);
 			if (!line)
 				return (-1);
-			line[size++] = byte;
-			if (byte == '\n')
+			line[size++] = sceid;
+			if (sceid == '\n')
 				break;
 		}
-		if (byte == '\n' || bytes <= 0)
+		if (sceid == '\n' || bytes <= 0)
 		{
 			line[size] = '\0';
 			*lineptr = line;
@@ -77,32 +77,32 @@ ssize_t _willy_getline(char **lineptr, size_t *n, int fd)
 }
 
 /**
- * _willy_getenv - Get the value of an environment variable
- * @name: Name of the environment variable
- * Return: Pointer to the value, or NULL if not found
+ * _getenv - gets the value of an env variable
+ * @name: name of the env variable
+ * Return: pointer to the value of the env variable, or NULL if not found
  */
-char *_willy_getenv(const char *name)
+char *_getenv(const char *name)
 {
 	size_t len, i;
 
 	if (!name || !environ)
 		return (NULL);
 
-	len = _willy_strlen((char *)name);
+	len = _strlen((char *)name);
 
 	for (i = 0; environ[i]; i++)
-		/* Check if string starts with the name of the env variable */
-		if (_willy_strcmp(environ[i], name, len) == 0 && environ[i][len] == '=')
+		/*check if string starts with the name of the env variable*/
+		if (_strcmp(environ[i], name, len) == 0 && environ[i][len] == '=')
 			return (&environ[i][len + 1]);
 
 	return (NULL);
 }
 
 /**
- * willy_copy_environ - Copy environment variables
- * Return: Pointer to the new array, or NULL if fails
+ * copy_environ - Copies the environment variables
+ * Return: A pointer to the newly allocated array of env, or NULL if fails
  */
-char **willy_copy_environ(void)
+char **copy_environ(void)
 {
 	size_t env_count = 0;
 	size_t new_size;
@@ -113,21 +113,21 @@ char **willy_copy_environ(void)
 		env_count++;
 
 	new_size = (env_count + 1) * sizeof(char *);
-	new_environ = willy_malloc(new_size);
+	new_environ = malloc(new_size);
 
 	if (!new_environ)
 	{
-		willy_fprintf(STDERR_FILENO, "Failed to allocate memory\n");
+		_fprintf(STDERR_FILENO, "Failed to allocate memory\n");
 		return (NULL);
 	}
 
 	/* Copy the environment variables */
 	for (env_count = 0; environ[env_count]; env_count++)
 	{
-		new_environ[env_count] = _willy_strdup(environ[env_count]);
+		new_environ[env_count] = _strdup(environ[env_count]);
 		if (!new_environ[env_count])
 		{
-			willy_fprintf(STDERR_FILENO, "Failed to allocate memory\n");
+			_fprintf(STDERR_FILENO, "Failed to allocate memory\n");
 			return (NULL);
 		}
 	}

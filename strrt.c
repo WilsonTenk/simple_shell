@@ -1,9 +1,9 @@
 #include "main.h"
 
 /**
- * _strlen - Calculate the length of a given string
- * @s: The string
- * Return: The length of the given string
+ * _strlen - String lengths
+ * @s: Given string
+ * Return: The given length of a string
  */
 int _strlen(char *s)
 {
@@ -16,46 +16,46 @@ int _strlen(char *s)
 }
 
 /**
- * reverse_str - Reverse a given string
- * @s: The string to be reversed
+ * reverse_str - This reverses a given string.
+ * @s: A string to reverse
  */
 void reverse_str(char s[])
 {
 	char temp;
-	unsigned int i = 0, len = 0;
+	unsigned int t = 0, len = 0;
 
 	len = _strlen(s);
 
-	for (; i < len / 2; i++)
+	for (; t < len / 2; t++)
 	{
-		temp = s[i];
-		s[i] = s[len - i - 1];
-		s[len - i - 1] = temp;
+		temp = s[t];
+		s[t] = s[len - t - 1];
+		s[len - t - 1] = temp;
 	}
 }
 
 /**
- * _stoa - Copy a string to a buffer
- * @s: The string to copy
- * @buf: The buffer to copy to
- * Return: The length of the copied string
+ * _stoa - It copy a string to a buffer
+ * @s: String to be copied
+ * @buf: Buffer to copy it to
+ * Return: Length of the string copied.
  */
 int _stoa(char *s, char *buf)
 {
-	int i = 0;
+	int t = 0;
 	char *p = (!s) ? "(null)" : s;
 
 	while (*p)
-		buf[i++] = *p++;
-	return (i);
+		buf[t++] = *p++;
+	return (t);
 }
 
 /**
- * _strcmp - Compare two strings
- * @s1: First string to compare
- * @s2: Second string to compare
- * @n: Number of characters to compare
- * Return: Difference between the two strings
+ * _strcmp - Two strings to be compared
+ * @s1: 1st string to compare.
+ * @s2: 2nd string to compare.
+ * @n: char indexes to compare
+ * Return: What differentiate the two strings
  */
 int _strcmp(const char *s1, const char *s2, size_t n)
 {
@@ -76,11 +76,11 @@ int _strcmp(const char *s1, const char *s2, size_t n)
 }
 
 /**
- * _memcpy - Copy memory from one location to another
- * @dest: A pointer to the destination memory
- * @src: A pointer to the source memory
- * @n: The number of bytes to copy
- * Return: A pointer to the destination memory
+ * _memcpy - This copies mem from one place to another
+ * @dest: Pointer to final memory
+ * @src: Pointer to source memory
+ * @n: Number of bytes to be copied
+ * Return: Pointer to the final memory
  */
 void *_memcpy(void *dest, const void *src, size_t n)
 {
