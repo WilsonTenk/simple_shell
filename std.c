@@ -21,7 +21,7 @@ char *read_line(shell *wt, int fd)
 
 	if (nread == -1)
 	{
-		sh->run = 0;
+		wt->run = 0;
 		free(line);
 		return (NULL);
 	}
